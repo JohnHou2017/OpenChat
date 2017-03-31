@@ -1,0 +1,20 @@
+﻿extends layout
+
+block mycss
+  link(rel='stylesheet', href='/stylesheets/chat.css')
+
+block content
+  h1= title
+
+  #chatfont
+    p Welcome to #{agencyid} - #{agentname}
+
+    input#pAgencyId(type='hidden', value=agencyid)
+    input#pAgentName(type='hidden', value=agentname)
+    
+  #usersclass   
+    ul#users.list-unstyled
+ 
+block myscripts
+  script(src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js")
+  script(src="/javascripts/user.js")

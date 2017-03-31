@@ -1,0 +1,22 @@
+ 
+table.table.table-striped.table-bordered.table-hover
+  caption Total agencies: {{agencies.length}}
+  thead
+    tr
+      th Agency Id
+      th Agency Name
+      th Hash Password
+      th Created Time         
+  tbody(ng-repeat='agency in agencies') 
+    // mongodb document field name is case sensitive, agency.AgencyName won't get value
+    tr
+      td
+        {{agency._id}}
+      td
+        {{agency.agencyname}}
+      td
+        {{agency.hashpassword}}
+      td
+        {{agency.createdtime}}
+      
+    

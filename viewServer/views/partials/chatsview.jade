@@ -1,0 +1,48 @@
+table#zebra.table.table-striped.table-bordered.table-hover
+
+  caption Total chats: {{chats.length}}
+
+  thead
+    tr
+      th #
+      th Session#
+      th Message
+      th Agency
+      th Agent
+      th Client      
+      th Time   
+
+  tbody(ng-repeat='chat in chats')
+
+    tr(ng-if="$index % 2 == 0" class="even")      
+      td
+        {{$index+1}}
+      td
+        {{chat.sessionNum}}
+      td
+        {{chat.message}}
+      td
+        {{chat.agencyid}}
+      td
+        {{chat.agentname}}
+      td
+        {{chat.clientname}}
+      td
+        {{chat.msgtime}}
+
+    tr(ng-if="$index % 2 != 0" class="odd")  
+      td
+        {{$index+1}}
+      td
+        {{chat.sessionNum}}
+      td
+        {{chat.message}}
+      td
+        {{chat.agencyid}}
+      td
+        {{chat.agentname}}
+      td
+        {{chat.clientname}}      
+      td
+        {{chat.msgtime}}      
+    

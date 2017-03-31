@@ -1,0 +1,25 @@
+
+table.table.table-striped.table-bordered.table-hover
+  caption Total sessions: {{sessions.length}}
+  thead
+    tr
+      th Agency
+      th Agent
+      th Client
+      th Start Time
+      th End Time
+  tbody(ng-repeat='session in sessions')
+    tr
+      td
+        {{session.agencyid}}
+      td
+        {{session.agentname}}
+      td
+        {{session.clientname}}
+      td
+        {{session.starttime}}
+      td
+        {{session.endtime}}
+
+ 
+  

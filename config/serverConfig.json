@@ -1,0 +1,12 @@
+{
+	"agentServerIP": "localhost",
+	"agentServerPort": "7000",
+	"chatServerIP": "localhost",
+	"chatServerPort": "443",
+	"viewServerIP": "localhost",
+	"viewServerPort": "3000",
+	"dbUrl": "mongodb://localhost:27017/chatdb",
+	"chatCollection": "chatDocs",
+	"chatSessionCollection": "chatSessionDocs",
+	"agencyCollection": "agencyDocs"
+}

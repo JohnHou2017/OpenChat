@@ -1,0 +1,22 @@
+﻿extends layout
+
+block mycss
+  link(rel='stylesheet', href='/stylesheets/chat.css')
+
+block content
+  h1= title
+  p Welcome to #{username}
+  input#pUserName(type='hidden', value=username)
+
+  #chatmsgclass
+    ul#msgs.list-unstyled
+ 
+  textarea#sendMsg.input.form-control.input-lg(rows='5', placeholder='Your Message')
+  br
+  button#sendBtn.btn.btn-success.btn-lg Send 
+  div
+    ul#agentIsTyping.list-unstyled
+          
+  block myscripts
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js")
+    script(src="/javascripts/chat.js")

@@ -1,0 +1,24 @@
+﻿extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+
+  p #{error}
+
+  div
+  form(action='/chat',method='post')
+    
+    .form-group
+      label Email (Optinal)
+      input.form-control(type='text', id='email', name='email' style='width: 600px;')
+    .form-group
+      label Phone (Optinal)
+      input.form-control(type='text', id='phone', name='phone' style='width: 600px;')
+    .form-group
+      label Name 
+      input.form-control(type='text', id='name', name='name' style='width: 600px;')
+    .controlse
+      button(type='submit' value='Login').btn.btn-primary Start Chat
+
+  

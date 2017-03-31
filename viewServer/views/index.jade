@@ -1,0 +1,24 @@
+﻿extends layout
+
+block content
+  h3 Chat List
+
+  table
+    tr        
+      ul.nav.navbar-nav
+        li
+          a(href='/') Home
+        li
+          a(href="/showchats") Chats
+        li
+          a(href='/showsessions') Sessions
+        li
+          a(href='/showagencies') Agencies
+      
+    tr
+      div(ng-view)
+
+block scripts
+  
+  script(src='javascripts/app.js')
+  

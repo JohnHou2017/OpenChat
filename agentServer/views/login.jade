@@ -1,0 +1,25 @@
+﻿extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+
+  p #{error}
+
+  div
+  form(action='/user',method='post')
+    
+    .form-group
+      label Username
+      input.form-control(type='text', id='nameid', name='name' style='width: 600px;')
+    .form-group
+      label Password
+      input.form-control(type='password', id='passwordid', name='password' style='width: 600px;')
+    .form-group
+      label Name (Optional)
+      input.form-control(type='text', id='agentnameid', name='agentname' style='width: 600px;')
+    .controlse
+      button(type='submit' value='Login' name='logreg').btn.btn-primary Sign In    
+      button(type='submit' value='Register' name='logreg' style='margin-left: 10px;').btn.btn-primary Register
+
+

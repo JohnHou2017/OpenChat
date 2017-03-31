@@ -1,0 +1,27 @@
+[2017-03-25 17:11:59.030] [ERROR] viewlog - newid : NaN
+[2017-03-25 17:14:21.673] [ERROR] viewlog - newid : NaN
+[2017-03-25 17:15:29.103] [ERROR] viewlog - newid : NaN
+[2017-03-25 17:17:31.447] [ERROR] viewlog - newid : 1
+[2017-03-25 17:27:03.948] [ERROR] viewlog - newid : 1
+[2017-03-25 17:27:03.948] [ERROR] viewlog - targetCollection : chatSessionDocs
+[2017-03-25 17:27:03.952] [ERROR] viewlog - successnewid : 1
+[2017-03-25 17:32:53.165] [ERROR] viewlog - newid : 1
+[2017-03-25 17:32:53.165] [ERROR] viewlog - targetCollection : chatSessionDocs
+[2017-03-25 17:32:53.169] [ERROR] viewlog - successnewid : 1
+[2017-03-25 17:32:53.170] [ERROR] viewlog - undefined
+[2017-03-25 17:36:39.085] [ERROR] viewlog - newid : 1
+[2017-03-25 17:36:39.085] [ERROR] viewlog - targetCollection : chatSessionDocs
+[2017-03-25 17:36:39.086] [ERROR] viewlog - successnewid : 1
+[2017-03-25 17:36:39.086] [ERROR] viewlog - undefined
+[2017-03-25 17:38:12.906] [ERROR] viewlog - bbbnewid : NaN
+[2017-03-25 17:38:12.906] [ERROR] viewlog - newid : 1
+[2017-03-25 17:38:12.906] [ERROR] viewlog - targetCollection : chatSessionDocs
+[2017-03-25 17:38:12.910] [ERROR] viewlog - successnewid : 1
+[2017-03-25 17:38:12.910] [ERROR] viewlog - undefined
+[2017-03-25 17:43:07.669] [ERROR] viewlog - bbbnewid : NaN
+[2017-03-25 17:45:58.168] [ERROR] viewlog - bbbnewid : NaN
+[2017-03-25 17:45:58.169] [ERROR] viewlog - newid : 1
+[2017-03-25 17:45:58.169] [ERROR] viewlog - targetCollection : chatSessionDocs
+[2017-03-25 17:45:58.172] [ERROR] viewlog - successnewid : 1
+[2017-03-25 17:45:58.173] [ERROR] viewlog - undefined
+[2017-03-25 17:45:58.174] [ERROR] viewlog - undefined

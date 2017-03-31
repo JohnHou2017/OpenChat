@@ -1,0 +1,1 @@
+C:\Users\John\documents\visual studio 2015\Projects\OpenChat\agentServer\bin\Microsoft.NodejsTools.WebRole.dll
