@@ -13,6 +13,7 @@
     "mongodb": "^2.2.25",
     "password-hash": "^1.2.2",
     "socket.io": "^1.7.3",
-    "stylus": "*"
+    "stylus": "*",
+    "typings": "^2.1.0"
   }
 }

@@ -1,11 +1,11 @@
 "use strict";
+var globals = require('../globals');
 function user(req, res) {
     var username = req.body.name;
     var password = req.body.password;
     var agtname = req.body.agentname;
-    var inputValue = req.body.logreg; // 'Login' or 'Register'
-    //console.log(inputValue);
-    var socket = require('socket.io-client').connect("http://localhost:7000");
+    var inputValue = req.body.logreg;
+    var socket = require('socket.io-client').connect(globals.agencyHttpServer);
     if (inputValue == "Login") {
         socket.emit('CheckLogin', username, password);
         socket.on('LoginResult', function (success, dbAgencyName) {

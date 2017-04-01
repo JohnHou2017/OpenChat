@@ -1,5 +1,7 @@
 ﻿import express = require('express');
 
+var globals = require('../globals');
+
 export function login(req: express.Request, res: express.Response) {
     res.render('login', { title: 'Agency Login' });
 };

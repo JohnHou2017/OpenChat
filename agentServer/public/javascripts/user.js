@@ -1,39 +1,42 @@
-﻿$(document).ready(function () {
+﻿// client side js
 
-    // connect to chat server
-    //var socket = io.connect("http://localhost:5000");
-   // var socket = io.connect("https://localhost:5001");
-    var socket = io.connect("https://localhost:443");
+$(document).ready(function () {
     
-    var agencyid = $("#pAgencyId").val();
+    var parameters = { id: 'chatserver'};
 
-    var agentname = $("#pAgentName").val();
+    $.get('/config/getone', parameters, function (data) {
+   
+        var chatHttpsServer = data;
 
-    var user = { type: 'agency', id: socket.id, toid: '', name: agentname, agency: agencyid, status: 'ready' };
+        // connect to https chat server
+        var socket = io.connect(chatHttpsServer); 
 
-    // send user info to chat server
-    socket.emit("joinChat", user);
+        var agencyid = $("#pAgencyId").val();
 
-    socket.on('UpdateAgencyUsers', function (users) {
-        $("#users").empty();
-        if (users.length > 0) {
-            var item = "<li>Name   Status  Served</li>";
-            $("#users").append(item);
-        }
-        
-        for (var i = 0; i < users.length; i++) { 
-            var id = users[i].id;
-            var name = users[i].name;
-            var item = "<li onclick=\"popChat('" + agencyid + "','" + agentname + "','" + name + "','" + id + "')\" id=\"" + id + "\">" + "<a href=\"#\">" + users[i].name + "</a>" + " " + users[i].status + " " + users[i].servedCount + "</li>";
-                   
-            $("#users").append(item);
-        } 
+        var agentname = $("#pAgentName").val();
+
+        var user = { type: 'agency', id: socket.id, toid: '', name: agentname, agency: agencyid, status: 'ready' };
+
+        // send user info to chat server
+        socket.emit("joinChat", user);
+
+        socket.on('UpdateAgencyUsers', function (users) {
+            $("#users").empty();
+            if (users.length > 0) {
+                var item = "<li>Name   Status  Served</li>";
+                $("#users").append(item);
+            }
+
+            for (var i = 0; i < users.length; i++) {
+                var id = users[i].id;
+                var name = users[i].name;
+                var item = "<li onclick=\"popChat('" + agencyid + "','" + agentname + "','" + name + "','" + id + "')\" id=\"" + id + "\">" + "<a href=\"#\">" + users[i].name + "</a>" + " " + users[i].status + " " + users[i].servedCount + "</li>";
+
+                $("#users").append(item);
+            }
+        });
     });
-
-    function updateUsers(user) {
-        $("#Users").append("<li>" + user.name + "</li>");
-    }
-
+   
 });
 
 function popChat(agencyid, agentname, clientName, clientId) {

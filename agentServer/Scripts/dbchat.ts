@@ -1,6 +1,5 @@
-﻿var config = require('../../config/serverConfig.json');
-
-var CHAT_COLLECTION = config.chatCollection;
+﻿
+var globals = require('../globals');
 
 export default class dbchat {
 
@@ -47,11 +46,11 @@ export default class dbchat {
     }
     
     // save agent or client message to database chatdb
-    public dbSaveMsg(chatdb) {
+    public dbSaveMsg() {
         this._msgtime = new Date();
-        chatdb.collection(CHAT_COLLECTION).insert(this.chatdoc, function (err, o) {
+        globals.chatdb.collection(globals.CHAT_COLLECTION).insert(this.chatdoc, function (err, o) {
             if (err) {
-                console.warn(err.message);
+                globals.agentLogger.warn(err.message);
             }
         });
     }

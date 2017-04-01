@@ -1,0 +1,11 @@
+[2017-04-01 09:52:54.544] [INFO] agentlog - agentid: undefined
+[2017-04-01 09:52:54.555] [INFO] agentlog - agentSocketid: Egrjg5VtF0Hr4j0FAAAC
+[2017-04-01 10:16:36.065] [INFO] agentlog - agentid: undefined
+[2017-04-01 10:16:36.154] [INFO] agentlog - agentSocketid: LpyWMjVlKyhaxl2sAAAC
+[2017-04-01 10:16:36.155] [INFO] agentlog - dbSaveSessionStart:LpyWMjVlKyhaxl2sAAAC_vUOAQOveIX2BWj2IAAAB
+[2017-04-01 10:17:15.102] [INFO] agentlog - dbSaveSessionEnd:LpyWMjVlKyhaxl2sAAAC_vUOAQOveIX2BWj2IAAAB
+[2017-04-01 15:37:37.864] [INFO] agentlog - agentid: undefined
+[2017-04-01 16:08:53.782] [INFO] agentlog - getone returned. agentid: undefined
+[2017-04-01 16:08:53.844] [INFO] agentlog - ConnectionSocketId:  agentSocketid: 9jY6oM54MIBRw1xRAAAC
+[2017-04-01 16:08:53.845] [INFO] agentlog - dbSaveSessionStart:9jY6oM54MIBRw1xRAAAC_pbGfh3BaA8ywYI2CAAAB
+[2017-04-01 16:09:08.469] [INFO] agentlog - dbSaveSessionEnd:9jY6oM54MIBRw1xRAAAC_pbGfh3BaA8ywYI2CAAAB

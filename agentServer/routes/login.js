@@ -1,4 +1,5 @@
 "use strict";
+var globals = require('../globals');
 function login(req, res) {
     res.render('login', { title: 'Agency Login' });
 }

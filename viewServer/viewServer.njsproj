@@ -33,6 +33,7 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="public\stylesheets\style.css" />
     <Content Include="views\partials\agenciesview.jade" />
     <Content Include="views\partials\sessionsview.jade" />
     <Content Include="views\partials\chatsview.jade" />

@@ -1,6 +1,5 @@
 "use strict";
-var config = require('../../config/serverConfig.json');
-var AGENCY_COLLECTION = config.agencyCollection;
+var globals = require('../globals');
 var dbagency = (function () {
     function dbagency() {
     }
@@ -41,12 +40,14 @@ var dbagency = (function () {
         configurable: true
     });
     // save agency to database chatdb and check register result to update error message
-    dbagency.prototype.dbSaveAgency = function (chatdb, socket, callbackfunc) {
+    dbagency.prototype.dbSaveAgency = function (socket, callbackfunc) {
         this._createdtime = new Date();
+        if (globals.chatdb)
+            console.log('111');
         // mongodb insert is async operation without blocking
-        chatdb.collection(AGENCY_COLLECTION).insert(this.agencydoc, function (err, result) {
+        globals.chatdb.collection(globals.AGENCY_COLLECTION).insert(this.agencydoc, function (err, result) {
             if (err) {
-                console.warn(err.message);
+                globals.agentLogger.warn(err.message);
                 callbackfunc(socket, false);
             }
             else
@@ -54,10 +55,10 @@ var dbagency = (function () {
         });
     };
     // query chatdb to check login credential and check login result to update error message
-    dbagency.prototype.dbCheckLogin = function (chatdb, socket, username, plainPassword, callbackfunc) {
+    dbagency.prototype.dbCheckLogin = function (socket, username, plainPassword, callbackfunc) {
         var searchDoc = { '_id': username };
         // mongodb insert is async operation without blocking
-        chatdb.collection(AGENCY_COLLECTION).findOne(searchDoc, function (err, result) {
+        globals.chatdb.collection(globals.AGENCY_COLLECTION).findOne(searchDoc, function (err, result) {
             if (err) {
                 console.warn(err.message);
                 callbackfunc(socket, plainPassword, null, null, false);

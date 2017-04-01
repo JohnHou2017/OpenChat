@@ -1,72 +1,76 @@
 ﻿import express = require('express');
-
 import routesLogin = require('./routes/login');
 import routesUser = require('./routes/user');
 import routesChat = require('./routes/chat');
 import dbsession from './Scripts/dbsession';
 import dbchat from './Scripts/dbchat';
 import dbagency from './Scripts/dbagency';
-
 import http = require('http');
 import path = require('path');
+import stylus = require('stylus');
 
+// global variables
+var globals = require('./globals');
+
+// express 
 var app = express();
 
-// all environments
-//app.set('port', process.env.PORT || 5002);
+// environment
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.use(express.favicon());
-//app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
 app.use(app.router);
-
-import stylus = require('stylus');
 app.use(stylus.middleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// development only
-//if ('development' == app.get('env')) {
-//   app.use(express.errorHandler());
-//}
+// listen parameter
+app.set('hostname', globals.agentServerIP);
+app.set('port', globals.agentServerPort);
 
+// route
 app.get('/', routesLogin.login);
 app.post('/user', routesUser.user);
 app.get('/chat', routesChat.chat);
 
-var dbClient = require('mongodb').MongoClient;
-var chatdb;
+// client js ajax call
+app.get('/config/getone', function (req, res) {
+    if (req.query.id == 'chatserver') {
+        res.send(globals.chatHttpsServer);
+    }
+    else if (req.query.id == 'chatagentserver') {
+        var retobj = {
+            agencyHttpServer: globals.agencyHttpServer,
+            chatHttpsServer: globals.chatHttpsServer
+        };
+        res.send(retobj);
+    }
+});
 
-var users = [];
-var channels = [];
 
+// server
 var httpServer = http.createServer(app);
+
+// socket io
 var io = require('socket.io')(httpServer);
 
-var log4js = require('log4js');
-//log4js.loadAppender('console');
-log4js.loadAppender('file');
-//log4js.addAppender(log4js.appenders.console());
-log4js.addAppender(log4js.appenders.file('logs/mylog1.log'), 'mylog1');
-
-var logger = log4js.getLogger('mylog1');
-
+// hash password
 var passwordHash = require('password-hash');
 
+// io events
 io.on('connection', function (socket) {
-    console.log('A Agency connected: ' + socket.id);
+    console.log('A user connected: ' + socket.id);
 
-    socket.on('Log', function (msg: string) {
-        logger.info(msg);
+    // serve client js log socket io event with log4js 
+    socket.on('ProxyLogInfo', function (msg: string) {
+        globals.agentLogger.info(msg);
     });  
 
     socket.on('joinAgent', function (user) {
         user.id = socket.id;
-
-        console.log('user join chat:' + user.name + ',' + user.type + ',' + user.id + ',' + user.toid);
-
+        console.log('User join chat:' + user.name + ',' + user.type + ',' + user.id + ',' + user.toid);
     });
 
     socket.on('SaveSessionStart', function (agentid, clientid, agencyid, agentname, clientname) {
@@ -77,16 +81,15 @@ io.on('connection', function (socket) {
         ds.agencyid = agencyid;
         ds.agentname = agentname;
         ds.clientname = clientname;                    
-        ds.dbSaveSessionStart(chatdb);        
+        ds.dbSaveSessionStart();        
     }); 
 
     socket.on('SaveSessionEnd', function (agentId: string, clientId: string) {
         console.log("SaveSessionEnd:" + agentId + ", " + clientId);
         let ds = new dbsession();
         ds.agentId = agentId;
-        ds.clientId = clientId;                  
-        
-        ds.dbSaveSessionEnd(chatdb);             
+        ds.clientId = clientId;                          
+        ds.dbSaveSessionEnd();             
     }); 
 
     socket.on('SaveChatMsg', function (msg: string, agentid: string, clientid: string, agencyid: string, agentname: string, clientname: string) {
@@ -99,10 +102,9 @@ io.on('connection', function (socket) {
         dc.sessionId = ds.GetSessionId(agentid, clientid);
 
         var data = { chatobj: dc };
-        // async get session, set sessionStartTime in callback
-        ds.GetSession(chatdb, dc.sessionId, data, SaveMsgCallback);
 
-        //dc.dbSaveMsg(chatdb);        
+        // async get session, set sessionStartTime and save msg in callback
+        ds.GetSession(dc.sessionId, data, SaveMsgCallback);               
     });    
 
     socket.on('SaveRegister', function (username: string, plainPassword: string, agencyname: string) {
@@ -112,34 +114,35 @@ io.on('connection', function (socket) {
         da.agencyname = agencyname;
 
         // mongo db query is async, use callback to wait it finish and return 
-        da.dbSaveAgency(chatdb, socket, SaveRegisterCallback);
-
+        da.dbSaveAgency(socket, SaveRegisterCallback);
     });  
     
-    socket.on('CheckLogin', function (username: string, plainPassword: string) {
-       
+    socket.on('CheckLogin', function (username: string, plainPassword: string) {       
         let da = new dbagency();
-
-        da.dbCheckLogin(chatdb, socket, username, plainPassword, CheckLoginCallback);
-              
+        da.dbCheckLogin(socket, username, plainPassword, CheckLoginCallback);              
     }); 
 
 });
 
-var config = require('../config/serverConfig.json');
-app.set('hostname', config.agentServerIP);
-app.set('port', config.agentServerPort);
-
+// start express listen
 httpServer.listen(parseInt(app.get('port')), app.get('hostname'), function () {
-//httpServer.listen(app.get('port'), function () {
-    console.log('Express server listening on http://' + app.get('hostname') + ':' + app.get('port'));
-    dbClient.connect(config.dbUrl, function (err, db) {
+
+    console.log('Express server listening on ' + globals.agencyHttpServer); 
+
+    // db instance
+    var dbInst = require('mongodb').MongoClient;
+     
+    // db connection
+    dbInst.connect(globals.dbUrl, function (err, dbConnected) {
         if (err) {
             console.log(err);
         }
-        else {
-            chatdb = db;
+        else {      
             console.log('Connected to mongodb.');
+
+            // assign connected db instance to global variable once connected
+            globals.chatdb = dbConnected;      
+            
         }
     });
 
@@ -156,19 +159,19 @@ function SaveRegisterCallback(socket, success) {
 }
 
 // update error message in callback after mongo db query return
-function CheckLoginCallback(socket, inputPlainPassword, dbHashPassword, dbAgencyName, success) {
-    //console.log('dbhas:' + dbHashPassword);    
+function CheckLoginCallback(socket, inputPlainPassword, dbHashPassword, dbAgencyName, success) {    
     var successLogin = (success == true) && (passwordHash.verify(inputPlainPassword, dbHashPassword) == true);
     socket.emit('LoginResult', successLogin, dbAgencyName);
 }
 
 function SaveMsgCallback(sessionObj, data) {
     if (sessionObj) {
+        // update sessionStartTime
         data.chatobj.sessionStartTime = sessionObj.starttime;
     }
     else {
     }
 
-    data.chatobj.dbSaveMsg(chatdb);
-
+    // save msg
+    data.chatobj.dbSaveMsg();
 }

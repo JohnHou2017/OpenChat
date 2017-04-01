@@ -1,34 +1,37 @@
-﻿$(document).ready(function () {
+﻿// client js
 
-    // connect to chat server
-    //var socket = io.connect("http://localhost:5000");
-    //var socket = io.connect("https://localhost:5001");
-    var socket = io.connect("https://localhost:443");
+$(document).ready(function () {
 
+    var parameters = { id: 'chatserver' };
 
-    if (socket)
-        console.log('client connected.');
+    $.get('/config/getone', parameters, function (data) {
 
-    var username = $("#pUserName").val();
+        var chatHttpsServer = data;
 
-    var user = { type: 'client', id: socket.id, toid: '', name: username, status: 'waiting' };
+        // connect to chat server   
+        var socket = io.connect(chatHttpsServer);
 
-    // send user info to chat server
-    socket.emit("joinChat", user);
+        var username = $("#pUserName").val();
 
-    $("#sendBtn").click(function () {
-        var msg = $("#sendMsg").val();
-        $("#msgs").append("<li>I say: " + msg + "</li>");  
-       
-        socket.emit("ClientToAgent", msg);
-      
-        $("#sendMsg").val("");
+        var user = { type: 'client', id: socket.id, toid: '', name: username, status: 'waiting' };
+
+        // send user info to chat server
+        socket.emit("joinChat", user);
+
+        $("#sendBtn").click(function () {
+            var msg = $("#sendMsg").val();
+
+            $("#msgs").append("<li>I say: " + msg + "</li>");
+
+            socket.emit("ClientToAgent", msg);
+
+            $("#sendMsg").val("");
+        });
+
+        socket.on('AgentToClient', function (msg) {
+            $("#msgs").append("<li>" + msg + "</li>");
+        });
+
     });
-
-    socket.on('AgentToClient', function (msg) {
-        $("#msgs").append("<li>" + msg + "</li>");
-    });
-
    
-
 });

@@ -1,16 +1,15 @@
 ﻿
 import express = require('express');
 
+var globals = require('../globals');
+
 export function user(req: express.Request, res: express.Response) {
     var username = req.body.name;
     var password = req.body.password;
-    var agtname = req.body.agentname;
-    
-    var inputValue = req.body.logreg; // 'Login' or 'Register'
+    var agtname = req.body.agentname;    
+    var inputValue = req.body.logreg; 
    
-    //console.log(inputValue);
-
-    var socket = require('socket.io-client').connect("http://localhost:7000");
+    var socket = require('socket.io-client').connect(globals.agencyHttpServer);
 
     if (inputValue == "Login") {
 
@@ -41,6 +40,5 @@ export function user(req: express.Request, res: express.Response) {
         });       
         
     }
-
     
 };

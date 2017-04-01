@@ -1,15 +1,4 @@
-﻿var config = require('../../config/serverConfig.json');
-
-var SESSION_COLLECTION = config.chatSessionCollection;
-
-var log4js = require('log4js');
-//log4js.loadAppender('console');
-log4js.loadAppender('file');
-//log4js.addAppender(log4js.appenders.console());
-log4js.addAppender(log4js.appenders.file('logs/mylog1.log'), 'mylog1');
-
-var logger = log4js.getLogger('mylog1');
-
+﻿
 var globals = require('../globals');
 
 export default class dbsession
@@ -69,24 +58,21 @@ export default class dbsession
     }
 
     // create a new session database record when agent pop up chat window to setup chat channel with client in chat server
-    public dbSaveSessionStart(chatdb) {
-        logger.info('dbSaveSessionStart:' + this.sessionId);
+    public dbSaveSessionStart() {
+        globals.agentLogger.info('dbSaveSessionStart:' + this.sessionId);
         this._starttime = new Date();
         this._endtime = null;
-        chatdb.collection(SESSION_COLLECTION).insert(this.sessiondoc, function (err, o) {
-            if (err) {
-                
-                logger.info('dbSaveSessionStart:' + err.message);
+        globals.chatdb.collection(globals.SESSION_COLLECTION).insert(this.sessiondoc, function (err, o) {
+            if (err) {                
+                globals.agentLogger.info('dbSaveSessionStart:' + err.message);
             }
         });
-        //var newid = globals.insertDocument(chatdb, this.sessiondoc, globals.SESSION_COLLECTION);
-        //this._id = newid;
     }
 
     // update session record end time when client or agent disconnect with chat server
-    public dbSaveSessionEnd(chatdb) {
+    public dbSaveSessionEnd() {
         
-        logger.info('dbSaveSessionEnd:' + this.sessionId);
+        globals.agentLogger.info('dbSaveSessionEnd:' + this.sessionId);
 
         var query = { sessionId: this.sessionId }
        
@@ -94,27 +80,25 @@ export default class dbsession
             $set: { endtime: new Date() }
         };  
         
-        chatdb.collection(SESSION_COLLECTION).update(query, docFields, function (err, o) {
-            if (err) {
-                
-                logger.info('dbSaveSessionEnd fail:' + err.message);
+        globals.chatdb.collection(globals.SESSION_COLLECTION).update(query, docFields, function (err, o) {
+            if (err) {                
+                globals.agentLogger.info('dbSaveSessionEnd fail:' + err.message);
             }
-            else {
-                
-                //logger.info('dbsession  success');
+            else {                                
             }
         });
     }
 
     // async get session from session id
-    public GetSession(chatdb, searchSessionId, data, callbackfunc) {
+    public GetSession(searchSessionId, data, callbackfunc) {
         
         var queryDoc = {
             sessionId: searchSessionId
         };
-        chatdb.collection(SESSION_COLLECTION).find(queryDoc).toArray(function (err, resultDocs) {
+
+        globals.chatdb.collection(globals.SESSION_COLLECTION).find(queryDoc).toArray(function (err, resultDocs) {
             if (err) {
-                logger.error(err);
+                globals.agentLogger.error(err);
                 callbackfunc(null, data);
             }
             else {                

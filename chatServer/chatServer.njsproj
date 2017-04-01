@@ -37,8 +37,8 @@
     <Content Include="views\login.jade" />
     <Content Include="views\chat.jade" />
     <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="globals.ts" />
     <TypeScriptCompile Include="routes\chat.ts" />
-    <TypeScriptCompile Include="routes\index.ts" />
     <TypeScriptCompile Include="routes\login.ts" />
     <TypeScriptCompile Include="Scripts\typings\express\express.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\node\node.d.ts" />
@@ -46,7 +46,6 @@
     <Content Include="package.json" />
     <Content Include="public\stylesheets\style.styl" />
     <Content Include="README.md" />
-    <Content Include="views\index.jade" />
     <Content Include="views\layout.jade" />
   </ItemGroup>
   <ItemGroup>

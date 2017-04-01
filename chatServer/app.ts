@@ -1,47 +1,52 @@
 ﻿import express = require('express');
 import routesLogin = require('./routes/login');
 import routesChat = require('./routes/chat');
-
-import http = require('http');
 import path = require('path');
+import stylus = require('stylus');
+var fs = require('fs');
 
 var https = require('https');
 
+// global variables
+var globals = require('./globals');
+
+// express
 var app = express();
 
-var fs = require('fs');
+// ssl certificate
+
 var sslOptions = {
     key: fs.readFileSync('sslcert/key.pem'),
     cert: fs.readFileSync('sslcert/cert.pem'),
     passphrase: 'J2iIYDRXqi2b1ihb'
 };
 
-// all environments
-app.set('port', process.env.PORT || 5000);
-//app.set('httpsport', process.env.PORT || 5001);
-app.set('httpsport', process.env.PORT || 443);
-app.set('agencyport', process.env.PORT || 7000);
+// environment
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.use(express.favicon());
-//app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
 app.use(app.router);
 
-import stylus = require('stylus');
 app.use(stylus.middleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// development only
-//if ('development' == app.get('env')) {
-//    app.use(express.errorHandler());
-//}
+// listen parameter
+app.set('hostname', globals.chatServerIP);
+app.set('port', globals.chatServerPort);
 
-
+// url page route
 app.get('/', routesLogin.login);
 app.post('/chat', routesLogin.chat);
+
+// client js ajax call
+app.get('/config/getone', function (req, res) {
+    if (req.query.id == 'chatserver') {
+        res.send(globals.chatHttpsServer);
+    }    
+});
 
 // a client is a visitor object connected to chat server
 var clients = [];
@@ -56,18 +61,17 @@ var channels = [];
 // a agent is created when a agency click user to open a chat window
 var agencies = [];
 
-//var server = http.createServer(app);
-//var httpio = require('socket.io')(server);
-//var io = httpio;
-
+// https
 var httpsServer = https.createServer(sslOptions, app);
+
+// socket io
 var httpsio = require('socket.io')(httpsServer);
 
 var io = httpsio;
 
 var dbSocket;
 
-//io.on('connection', function (socket) {
+// socket io events
 io.on('connection', function (socket) {
     console.log('A user connected: ' + socket.id);
 
@@ -142,12 +146,10 @@ io.on('connection', function (socket) {
                     break;
                 }                               
             }
-        }
-        
+        }        
     });
 
-    socket.on('ClientToAgent', function (msg) {
-              
+    socket.on('ClientToAgent', function (msg) {              
         for (var i = 0; i < channels.length; i++) {
             if (channels[i].ClientSocketId == socket.id) {
                 console.log('ClientToAgent:' + msg);
@@ -269,13 +271,11 @@ io.on('connection', function (socket) {
     
 });
 
-//server.listen(app.get('port'), function () {
-//    console.log('Express server listening on port ' + app.get('port'));
-//});
+// start express listen
+httpsServer.listen(parseInt(app.get('port')), app.get('hostname'), function () {
 
-httpsServer.listen(app.get('httpsport'), function () {
-    console.log('Express server listening on port ' + app.get('httpsport'));
-
+    console.log('Express server listening on ' + globals.chatHttpsServer); 
+    
     // get agency io for direct database access
-    dbSocket = require('socket.io-client')("http://localhost:" + app.get('agencyport'));
+    dbSocket = require('socket.io-client')(globals.agencyHttpServer);
 });

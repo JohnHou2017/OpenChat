@@ -1,5 +1,7 @@
 ﻿import express = require('express');
 
+var globals = require('../globals');
+
 export function chat(req: express.Request, res: express.Response) {
 
     var agency = req.query.agencyid;

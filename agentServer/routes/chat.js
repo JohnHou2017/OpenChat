@@ -1,4 +1,5 @@
 "use strict";
+var globals = require('../globals');
 function chat(req, res) {
     var agency = req.query.agencyid;
     var agtname = req.query.agentname;
