@@ -13,16 +13,16 @@ Architecture:
 
 ## Servers
 ```
-1. Chat Server: an Express server for client and agency communicationmain, listen at https://localhost:443
-2. Agency Server: an Express server for an agency to login to serve client chat request, listen at http://localhost:7000.
-3. View Server:an Express server for customer service to login to view chat records, listen at http://localhost:3000
+1. Chat Server: an Express server for client and agency communicationmain, listen at https://localhost:443.
+2. Agency Server: an Express server for an agency to login and serve client, listen at http://localhost:7000.
+3. View Server:an Express server for customer service to login to view chats, listen at http://localhost:3000.
 4. Database Server: an Mongodb server, listen at default port: 27017.
 ```
 ## Chat Server
 ```
 This is main server, a proxy server to server communication request between a client or visitor and a agent.
 ```
-### HTTPS Express Server
+#### HTTPS Express Server
 ```
 // import https module
 var https = require('https');
@@ -41,7 +41,7 @@ var httpsServer = https.createServer(sslOptions, app);
 httpsServer.listen(parseInt(app.get('port')), app.get('hostname'), function () {
 ....
 ``` 
-### Socket IO Events
+#### Socket IO Events
 ```
 // socket io module object
 var httpsio = require('socket.io')(httpsServer);
@@ -49,27 +49,27 @@ var httpsio = require('socket.io')(httpsServer);
 // socket io events
 io.on('connection', function (socket) {
 ```
-### Data Sturcture
+#### Data Sturcture
 ```
 // a client is a visitor object connected to chat server
 var clients = [];
 
 // a chat channel is an object with two socket IDs from agent and client to the chat server
 // a chat channel must have two side valid connections to chat server, 
-// a chat channel will be deleted if any party leave the chat session(i.e. close chat window) will 
+// a chat channel will be deleted if any party leave the chat session(i.e. close chat window)  
 var channels = [];
 
-// a agency is a connection socket id to agent server
-// a agent has two connection socket IDs to agent server and chat server
-// a agent is created when a agency click user to open a chat window
+// an agency is a connection socket id to agent server
+// an agent has two connection socket IDs to agent server and chat server
+// an agent is created when a agency click user to open a chat window
 var agencies = [];
 ```
-### Global Module
+#### Global Module
 ```
 // global variables
 var globals = require('./globals');
 ```
-#### globals.ts:
+##### globals.ts:
 ```
 // database module variable
 export var chatdb;
@@ -85,6 +85,33 @@ var log4js = require('log4js');
 export var agentLogger = log4js.getLogger('agentlog');
 ...
 ```
+#### Workflow
+
+##### 1. Client Login Page
+```
+Client or visitor open https://localhost to enter Chat Server login page. 
+1. app.ts: app.get('/', routesLogin.login); => 
+2. login.ts: res.render('login', { title: 'Client Login' }); =>
+3. login.jade: button(type='submit' value='Login').btn.btn-primary Start Chat
+```
+##### 2. Client Chat Page
+```
+Click Star Chat button to navigate to client chat page https://localhost/chat.
+1. app.ts: app.set('port', globals.chatServerPort); =>
+2. chat.ts: res.render('chat', { title: 'Client Chat', message: sendMsg }); =>
+3. chat.jade: button#sendBtn.btn.btn-success.btn-lg Send 
+```
+##### 3. Client Send Message
+```
+Click Send button to send message.
+chatServer\public\javascripts\chat.js: socket.emit("ClientToAgent", msg);
+```
+##### 4. Client Receive Message
+```
+Client receive Agent message.
+chatServer\public\javascripts\chat.js: socket.on('AgentToClient', function (msg) { ...           
+```
+
 ## Agent Server
 
 ## View Server
