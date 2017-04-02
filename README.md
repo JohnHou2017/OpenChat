@@ -3,7 +3,7 @@
 ## Outline
 
 A online chat application for customer support.
-This application uses Typescripts, Socket IO, Node JS, Express, Jade and Angular JS.
+This application uses Typescripts, Socket IO, Node.js, Express, Jade and Angular JS.
 
 ## Design
 
@@ -11,6 +11,13 @@ Architecture:
 
 ![alt tag](https://github.com/JohnHou2017/OpenChat/blob/master/doc/OpenChatArchitecture.png)
 
+## Dev Environment
+```
+1. Install Visual Studio 2015.
+2. Install Node.js.
+3. Install Mongodb.
+4. Install Robomongo.
+```
 ## Servers
 ```
 1. Chat Server: an Express server for client and agency communicationmain, listen at https://localhost:443.
@@ -21,6 +28,10 @@ Architecture:
 ## Chat Server
 ```
 This is main server, a proxy server to server communication request between a client or visitor and a agent.
+Source Folder: OpenChat\chatServer
+Main Program: app.ts
+Build: Run "Build" in Visual Studio 2015.
+Start: Run "Node app.js" in DOS cmd console.
 ```
 #### HTTPS Express Server
 ```
@@ -87,14 +98,20 @@ export var agentLogger = log4js.getLogger('agentlog');
 ```
 #### Workflow
 
-##### 1. Client Login Page
+##### 1. Start Chat Server
+```
+Open DOS cmd
+Run "Node app.js"
+httpsServer.listen(parseInt(app.get('port')), app.get('hostname'), function () {
+```
+##### 2. Client Login Page
 ```
 Client or visitor open https://localhost to enter Chat Server login page. 
 1. app.ts: app.get('/', routesLogin.login); => 
 2. login.ts: res.render('login', { title: 'Client Login' }); =>
 3. login.jade: button(type='submit' value='Login').btn.btn-primary Start Chat
 ```
-##### 2. Client Chat Page
+##### 3. Client Chat Page
 ```
 Click Star Chat button to navigate to client chat page https://localhost/chat.
 1. app.ts: app.set('port', globals.chatServerPort); =>
@@ -106,7 +123,7 @@ Click Star Chat button to navigate to client chat page https://localhost/chat.
 Click Send button to send message.
 chatServer\public\javascripts\chat.js: socket.emit("ClientToAgent", msg);
 ```
-##### 4. Client Receive Message
+##### 5. Client Receive Message
 ```
 Client receive Agent message.
 chatServer\public\javascripts\chat.js: socket.on('AgentToClient', function (msg) { ...           
