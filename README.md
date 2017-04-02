@@ -343,11 +343,100 @@ agentServer\public\javascripts\chat.js: socket.emit("AgentToClient", msg);
 ```
 ##### 8. Agent Receive Message
 ```
-Client receive Agent's message.
+Agent receives Client's message.
 Source:
 agentServer\public\javascripts\chat.js: socket.on('ClientToAgent', function (msg) {            
 ```
 
 ## View Server
+```
+This is an Express server to serve customer service to view chat records. It gets records from Mongodb database and uses Angular JS to display chat, session and agency records.
 
+Source Folder: OpenChat\viewServer
+Main Program: app.ts
+Build: Run "Build" in Visual Studio 2015.
+Start: Run "Node app.js" in DOS cmd console.
+Listen: http://localhost:3000
+```
 #### HTTP Express Server
+```
+http.createServer(app).listen(app.get('port'), function () {
+```
+#### Mongodb Connection
+```
+dbClient.connect(config.dbUrl, function (err, db) {
+```
+#### Index Page
+```
+1. app.ts: app.get('/', routes.index); =>
+2. index.ts: res.render('index'); =>
+3. inde.jade: 
+extends layout
+block content
+  h3 Chat List
+  table
+    tr        
+      ul.nav.navbar-nav
+        li
+          a(href='/') Home
+        li
+          a(href="/showchats") Chats
+        li
+          a(href='/showsessions') Sessions
+        li
+          a(href='/showagencies') Agencies      
+    tr
+      div(ng-view)
+block scripts  
+  script(src='javascripts/app.js')      
+```
+#### Angular Controller
+```
+Source: viewServer\public\javascripts\app.js
+
+var app = angular.module('chatApp',['ngRoute']);
+app.config(function ($routeProvider, $locationProvider) {
+        $routeProvider.
+            when('/', {
+                templateUrl: '/partials/index',
+                controller: 'IndexCtrl'
+            }).    
+            when('/showchats', {
+                templateUrl: '/partials/chatsview',
+                controller: 'ChatsCtrl'
+            }). 
+            when('/showsessions', {
+                templateUrl: '/partials/sessionsview',
+                controller: 'SessionsCtrl'
+            }). 
+            when('/showagencies', {
+                templateUrl: '/partials/agenciesview',
+                controller: 'AgenciesCtrl'
+            }).                 
+            otherwise({
+                redirectTo: '/'
+        });       
+        $locationProvider.html5Mode(true);
+    });
+```
+#### Chat Page
+```
+1. app.ts: app.get('/partials/:name', routes.partials) =>
+2. app.js: templateUrl: '/partials/chatsview' =>
+3. view/partials/chatview.jade: 
+   update the partial view part "div(ng-view)" in Single Page index.jade with "tbody(ng-repeat='chat in chats')"
+```
+#### Session Page
+```
+1. app.ts: app.get('/partials/:name', routes.partials) =>
+2. app.js: templateUrl: '/partials/sessionsview' =>
+3. view/partials/sessionsview.jade: 
+   update the partial view part "div(ng-view)" in Single Page index.jade with "tbody(ng-repeat='session in sessions')"
+```
+#### Agency Page
+```
+1. app.ts: app.get('/partials/:name', routes.partials) =>
+2. app.js: templateUrl: '/partials/agenciesview' =>
+3. view/partials/agenciesview.jade: 
+   update the partial view part "div(ng-view)" in Single Page index.jade with "tbody(ng-repeat='agency in agencies')"
+```
