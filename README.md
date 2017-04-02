@@ -156,7 +156,7 @@ Source flow:
 ```
 Click "Star Chat" button to navigate to client chat page "https://localhost/chat".
 Source flow:
-1. app.ts: app.set('port', globals.chatServerPort); =>
+1. app.ts: app.post('/chat', routesLogin.chat); =>
 2. chat.ts: res.render('chat', { title: 'Client Chat', message: sendMsg }); =>
 3. chat.jade: button#sendBtn.btn.btn-success.btn-lg Send 
 ```
@@ -257,6 +257,95 @@ $("#sendBtn").click(function () {
 4. Receive Client's message:
 Source:
 socket.on('ClientToAgent', function (msg) {
+```
+#### Workflow
+
+##### 1. Create Mongodb collections
+```
+This only needs to run once.
+
+1. Start Mongodb Server
+Run "C:\Program Files\MongoDB\Server\3.4\bin\mongod.exe" --dbpath ".\data"
+2. Start Mongodb Shell
+Run "C:\Program Files\MongoDB\Server\3.4\bin\mongo.exe"
+3. Create 1 database and 3 collections in Mongodb Shell
+>use chatdb
+>db.createCollection("agencyDocs")
+>db.createCollection("chatDocs")
+>db.createCollection("chatSessionDocs")
+```
+##### 2. Start Mongodb Server
+```
+Run "C:\Program Files\MongoDB\Server\3.4\bin\mongod.exe" --dbpath ".\data"
+```
+##### 3. Start Agent Server
+```
+Open DOS cmd
+Run "Node app.js"
+Source:
+httpsServer.listen(parseInt(app.get('port')), app.get('hostname'), function () {
+```
+##### 4. Agent Login Page
+```
+Agent open "http://localhost:7000" to enter Agent Server login page. 
+Source flow:
+1. app.ts: app.get('/', routesLogin.login); => 
+2. login.ts: res.render('login', { title: 'Agency Login' }); =>
+3. login.jade: button(type='submit' value='Login' name='logreg').btn.btn-primary Sign In 
+4. login.jade: button(type='submit' value='Register' name='logreg' style='margin-left: 10px;').btn.btn-primary Register
+To Register, click Register button in this page.
+```
+##### 5. Agency User Page
+```
+Click "Sign In" button to navigate to Agency Page "http://localhost:7000/user".
+Source flow:
+1. app.ts: app.post('/user', routesUser.user); =>
+2. user.ts: res.render('chat', { title: 'Client Chat', message: sendMsg }); =>
+3. user.jade: ul#users.list-unstyled
+
+The users list will show all online clients, these clients login the Chat Server at https://localhost.
+
+```
+##### 6. Agent Chat Page
+```
+Click a user in the list to choose an online client to chat with. This will open a popup window which is the Agent Chat Page.
+The popup window url looks like: 
+http://localhost:7000/chat?agencyid=JohnHou&agentname=John&clientname=James&clientsocketid=Qoj6uEDn_mPffFhTAAAB
+
+Source flow:
+
+agentServer\public\javascripts\user.js: 
+var item = "<li onclick=\"popChat('" + agencyid + "','" + agentname + "','" + name + "','" + id + "')\" id=\"" + id + "\">" + "<a href=\"#\">" + users[i].name + "</a>" + " " + users[i].status + " " + users[i].servedCount + "</li
+...
+var url = "/chat?agencyid=" + agencyid + "&agentname=" + agentname + "&clientname=" + clientName + "&clientsocketid=" + clientId;
+window.open(url, "_blank", "height=600,width=700,modal=yes,alwaysRaised=yes", false);
+=>
+
+app.ts: app.get('/chat', routesChat.chat);
+=>
+
+chat.ts: res.render('chat', { title: 'Agent Chat', agencyId: agency, agentName: agtname, clientName: cname, clientSocketId: csocketid });
+=>
+
+chat.jade: render the page and reference the agent's client side js with script(src="/javascripts/chat.js") to accommdate chat behaviors when document is ready.
+=>
+
+client side js: agentServer\public\javascripts\chat.js
+
+Once the agent window is popped up for the chosen client, a chat channel will setup between them, then a chat session record will be created in database, the session record will be updated when the chat channel is unavailable, which means client or agent close their chat window.
+
+```
+##### 7. Agent Send Message
+```
+Click "Send" button to send message.
+Source:
+agentServer\public\javascripts\chat.js: socket.emit("AgentToClient", msg);
+```
+##### 8. Agent Receive Message
+```
+Client receive Agent's message.
+Source:
+agentServer\public\javascripts\chat.js: socket.on('ClientToAgent', function (msg) {            
 ```
 
 ## View Server
