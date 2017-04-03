@@ -366,11 +366,42 @@ http.createServer(app).listen(app.get('port'), function () {
 ```
 dbClient.connect(config.dbUrl, function (err, db) {
 ```
+#### Layout Page
+```
+Layout.jade
+
+doctype html
+html(ng-app="chatApp")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+    base(href='/')
+    title= title    
+    link(rel='stylesheet', href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css")
+    link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
+  body
+    block content
+    script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
+    script(src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js')    
+    script(src='//cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular.min.js')
+    script(src='//cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular-route.js')
+    block scripts
+    
+Node:
+1. Layout.jade is a jade page template, a new jade page extends from layout template will share same css and javascripts.
+1. Angular module bind: html(ng-app="chatApp")
+   The "chatApp" is below Angular module name.
+2. Page specific content: block content
+3. Page specific scripts: block scripts
+   
+```
 #### Index Page
 ```
 1. app.ts: app.get('/', routes.index); =>
 2. index.ts: res.render('index'); =>
-3. inde.jade: 
+3. index.jade: 
+
 extends layout
 block content
   h3 Chat List
@@ -389,8 +420,13 @@ block content
       div(ng-view)
 block scripts  
   script(src='javascripts/app.js')      
+  
+Node:
+1. Load Angular module: script(src='javascripts/app.js')
+   This is done by include the module javascripts app.js at the end of page body which will load the app.js in page rendering.
+   
 ```
-#### Angular Controller
+#### Angular Module, Controller and Service
 ```
 Source: viewServer\public\javascripts\app.js
 
@@ -419,24 +455,57 @@ app.config(function ($routeProvider, $locationProvider) {
         $locationProvider.html5Mode(true);
     });
 ```
-#### Chat Page
+#### Chat View Page
 ```
-1. app.ts: app.get('/partials/:name', routes.partials) =>
-2. app.js: templateUrl: '/partials/chatsview' =>
+1. index.jade: a(href="/showchats") Chats =>
+2. viewServer\public\javascripts\app.js: templateUrl: '/partials/chatsview' =>
 3. view/partials/chatview.jade: 
    update the partial view part "div(ng-view)" in Single Page index.jade with "tbody(ng-repeat='chat in chats')"
+   
+Node:
+When rendering chatview.jade page in above last step, the "chats" is a shared global variable between the view charview.jade and the controller "ChatsCtrl", "chats" is the "$scope.chats" defined in Controller "ChatsCtrl". A URL request to /partials/chatsview will cause the Controller "ChatsCtrl" is called, which calls the service to get all chat records from database:
+var promiseGet = chatService.loadAllChats();
+The $scope.chats is then assigned dynamiclly with the result of the service method loadAllChats().
+
+The chat service method loadAllChats:
+this.loadAllChats = function () {
+        var url = 'api/chat/AllChat';
+        return $http.get(url).then(function (response) {
+            return response.data;
+        });
+    }
+In this function, the $http is an Angular service for client side to send a request to remote server (app.ts) and return a response. Here it sends http request to url 'api/chat/AllChat', which is defined in viewServer main program app.ts:
+app.get('/api/chat/AllChat', chat.AllChat);
+This will call the method AllChat() in the route module viewServer\routes\chat.ts:
+export function AllChat(req: express.Request, res: express.Response) {
+    var sortCol = { sessionStartTime: 1, msgtime: 1 };
+    globals.chatdb.collection(globals.CHAT_COLLECTION).find({}).sort(sortCol).toArray(function (err, resultDocs) {
+        if (err) {
+            globals.viewLogger.error(err);
+        }
+        else {
+            globals.viewLogger.info("Count of all chat records: " + resultDocs.length);
+            res.status(200).json(resultDocs);
+        }
+    });
+}
+
+This method fetches all chat documents from collection "chatDocs", then return the response to client side:
+res.status(200).json(resultDocs);
+
+In above loadAllChats() service method, the "data" in "response.data" is a $http property which is the above server response body transformed by json.
 ```
-#### Session Page
+#### Session View Page
 ```
-1. app.ts: app.get('/partials/:name', routes.partials) =>
-2. app.js: templateUrl: '/partials/sessionsview' =>
+1. index.jade: a(href='/showsessions') Sessions =>
+2. viewServer\public\javascripts\app.js: templateUrl: '/partials/sessionsview' =>
 3. view/partials/sessionsview.jade: 
    update the partial view part "div(ng-view)" in Single Page index.jade with "tbody(ng-repeat='session in sessions')"
 ```
-#### Agency Page
+#### Agency View Page
 ```
-1. app.ts: app.get('/partials/:name', routes.partials) =>
-2. app.js: templateUrl: '/partials/agenciesview' =>
+1. index.jade: a(href='/showagencies') Agencies =>
+2. viewServer\public\javascripts\app.js: templateUrl: '/partials/agenciesview' =>
 3. view/partials/agenciesview.jade: 
    update the partial view part "div(ng-view)" in Single Page index.jade with "tbody(ng-repeat='agency in agencies')"
 ```
